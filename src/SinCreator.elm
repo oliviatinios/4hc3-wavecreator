@@ -1,5 +1,30 @@
 module SinCreator exposing (..)
+{- 
+Team Member Names and Student Numbers: Olivia Tinios (400034007), Navya Sachdeva (001426466), Songyi Jo (001300927)
 
+User: Who is your imagined user
+The imagined user is a 10 year old child in elementary school. Their class is visited by MacOutreach for an ELM programming workshop on Wave Creator. MacOutreach had previously visited this same class for a workshop with Shape Creator. As a 10 year old, they have no background knowledge of sine/cosine functions. 
+
+Activity: What activity is your user engaged in
+The user is learning how to create animations in ELM.
+
+Emotion: How does your user feel about this activity
+The user may feel confused about this activity at first. They do not know about sine or cosine functions, and may feel intimidated by the relative complexity of it. At the same time, they may also feel excited that they will finally be able to make their shapes in their ELM code move.
+
+Tasks: What tasks are part of this activity
+The activity requires participants to play around with the Wave Creator module until they achieve a desired transformation for their shape(s) in their ELM code - they are able to preview the transformation with the square in the module. Once they get the desired animation, they will copy the code block generated from Wave Creator, then apply it to their own shapes in their ELM code.
+
+Typical Interaction: Describe a typical interaction of your user (the TAs will test this out, so include sufficient detail)
+The user will play around with the wave creator module. When the user looks at the website, they discover the steps they can potentially take to get the result they want. They will see the label "1. Choose a shape", and pick a shape that they wish to see in the results and as they are picking it, they will see the shape under "See the results!" change. Then, they will move on to the next step which is indicated by the label "2. Apply a transformation" which will let the user input how they want the shape to be transformed, and subsequently they will see the transformed results under the "See the results!" box. Then the user will move on to the next step, which is "3. Adjust the wave", which will let the user apply transformations to the sine wave. The labels on the sine function will help the user adjust the wave. The next block, "4. Copy your code", gives the user the appropriate elm code which can be then copied and pasted into their application. The graph and "5.See the results!" shows the user the results that are produced from the previous four steps.
+
+Principle 1: First of Norman's principles and how it guided your design
+The first Norman's principle that guided our design was Discoverability. The original design had elements of the program all over the interface and it was unclear where exactly to start in order to use the module. We improved the interface by rearranging the elements, and adding step names to guide the user through the module. The step names are as follows: "1. Choose a shape!", "2. Apply a transformation!" and "3. Adjust the wave!", "4.Copy your code!" and "See the Results!". By presenting each step of the module in a linear and numerical fashion, it allows the user to navigate through the module more easily.  
+
+Principle 2: Second of Norman's principles and how it guided your design.
+The second Norman's principle that guided our design was Mapping. Since the imagined user is a child with no background of sine/cosine functions, they will have little understanding of the effects of changing the values. They could play around with the values to get an idea but it would take too long to understand. To improve the child's understanding of this, we have added labels next to the triangle buttons to explain what they do in a concise way. ie, changing the amplitude makes the animation bigger/smaller, changing the frequency makes it faster/slower, and changing the offset will offset it more left/right.
+
+
+-}
 {-
 Copyright 2017-2019 Christopher Kumar Anand,  Adele Olejarz, Chinmay Sheth, Yaminah Qureshi, Graeme Crawley and students of McMaster University.  Based on the Shape Creator by Levin Noronha.
 
@@ -67,6 +92,7 @@ init =
     , trigCycleV = Sin
     , latestPointV = ( 0, 0, rgb 160 128 96 )
     , uTransform = ScaleU
+    , uShape = Circle
     , moveX = ZeroFun
     , moveY = UFunZero
     , moveX1 = UFunZero
@@ -82,6 +108,8 @@ init =
     , buttonDownTime = 0
     , transformsRightArrowTransp = 0.25
     , transformsLeftArrowTransp = 0.25
+    , shapesRightArrowTransp = 0.25
+    , shapesLeftArrowTransp = 0.25
 
     --, transformsNumTransp = 0.25
     , moveTextX = 0.25
@@ -132,6 +160,8 @@ type Msg m
       --| MoveX1
       --| MoveY1
       --| TransformsFunctionChange
+    | UShapes
+    | UShapesReverse
     | RScalePlus
     | RScaleMinus
     | GScalePlus
@@ -191,6 +221,11 @@ type Transforms
     | MakeTransparent
     | EditableXSin
 
+type Shapes
+    = Circle
+    | Square
+    | Rect
+    | Triangle
 
 type ButtonDir
     = AmplitudeUp
@@ -718,6 +753,12 @@ update msg model =
         UTransformsReverse ->
             { model | uTransform = cycleTransformsReverse model.uTransform }
 
+        UShapes ->
+            { model | uShape = cycleShapes model.uShape }
+
+        UShapesReverse ->
+            { model | uShape = cycleShapesReverse model.uShape }
+
         {-
            MoveX ->
                { model | moveX = cycleFunZero model.moveX }
@@ -1026,6 +1067,83 @@ applyTransformsYourCode model tr =
 
 
 
+-------------
+cycleShapes sh =
+    case sh of
+        Circle ->
+            Square
+
+        Square ->
+            Rect
+
+        Rect ->
+            Triangle
+
+        Triangle ->
+            Circle
+
+
+cycleShapesReverse sh =
+    case sh of
+        Circle ->
+            Triangle
+
+        Triangle ->
+            Rect
+
+        Rect ->
+            Square
+
+        Square ->
+            Circle
+
+
+applyShapes sh model =
+    case sh of
+        Circle ->
+            circle 10
+
+        Square ->
+            square 10
+
+        Rect ->
+            rect 10 15
+
+        Triangle ->
+            triangle 10
+
+
+applyShapesText sh =
+    case sh of
+        Circle ->
+            " circle "
+
+        Square ->
+            " square "
+
+        Rect ->
+            " rectangle "
+
+        Triangle ->
+            " triangle "
+
+
+applyShapesYourCode model sh =
+    case sh of
+        Circle ->
+            "circle 10"
+
+        Square ->
+            "square 10"
+
+        Rect ->
+            "rect 10 15"
+
+        Triangle ->
+            "triangle 10"
+
+
+
 -- change you app's state based on your new messages
 
 
@@ -1108,26 +1226,33 @@ view model =
                 [ rect 200 100 |> outlined (solid 1) red |> makeTransparent 0.25 |> move ( 100, 20 )
                 , copiable "--Add these new definitions to your code" |> move ( 0, 60 )
                 , copiable ("u = " ++ String.fromFloat model.uScale ++ "*" ++ textTrig model.trigCycleU ++ "(" ++ String.fromFloat model.uDilation ++ "*model.time+" ++ String.fromFloat model.uShift ++ ")") |> move ( 0, 50 )
-                , copiable "mySquare = square 15" |> move ( 0, 30 )
+                , copiable ("myShape = " ++ applyShapesYourCode model model.uShape) |> move ( 0, 30 )
                 , copiable ("  |> outlined (solid 0.25) rgb (" ++ String.fromFloat model.rScale ++ "*" ++ showFun model.rFun u v ++ " " ++ String.fromFloat model.gScale ++ "*" ++ showFun model.gFun u v ++ " " ++ String.fromFloat model.bScale ++ "*" ++ showFun model.bFun u v ++ ")") |> move ( 35, 20 )
                 , copiable ("  " ++ applyTransformsYourCode model model.uTransform) |> move ( 35, 10 )
                 , copiable ("  |> move(" ++ moveText model.moveX1 ++ "," ++ moveText model.moveY1 ++ ")") |> move ( 35, 0 )
-                , copiable "--Add the following code to your shapes:" |> move ( 0, -10 )
-                , copiable "mySquare" |> move ( 10, -20 )
+                --, copiable "--Add the following code to your shapes:" |> move ( 0, -10 )
+                --, copiable "mySquare" |> move ( 10, -20 )
                 ]
 
         transformsGraphicsGroup =
             group
-                [ rect 210 200 |> outlined (solid 1) red |> makeTransparent 0.25 |> move ( 45, 70 )
-                , square 15 |> outlined (solid 1) (rgb model.r model.g model.b) |> applyTransforms model.uTransform model |> move ( 45, 60 )
-                , group
-                    [ text (applyTransformsText model.uTransform) |> size 10 |> filled black |> move ( 4, 105 )
-                    , triangle 8 |> filled (rgb 255 10 10) |> rotate (degrees 180) |> notifyTap UTransformsReverse |> move ( -70, 105 ) |> notifyLeave (TransM (\m -> { m | transformsLeftArrowTransp = 0.25 })) |> notifyEnter (TransM (\m -> { m | transformsLeftArrowTransp = 1 })) |> makeTransparent model.transformsLeftArrowTransp
-                    , triangle 8 |> filled (rgb 255 10 10) |> notifyTap UTransforms |> move ( 100, 105 ) |> notifyLeave (TransM (\m -> { m | transformsRightArrowTransp = 0.25 })) |> notifyEnter (TransM (\m -> { m | transformsRightArrowTransp = 1 })) |> makeTransparent model.transformsRightArrowTransp
+                [ rect 210 200 |> outlined (solid 1) red |> makeTransparent 0.25 |> move ( 45, 60 )
+                , (applyShapes model.uShape model) |> outlined (solid 1) (rgb model.r model.g model.b) |> applyTransforms model.uTransform model |> move ( 45, 60 )
+                ]
 
-                    --, text (moveText model.transformFun) |> size 10 |> filled black |> notifyTap TransformsFunctionChange |> move ( x1, 105 ) |> notifyLeave (TransM (\m -> { m | transformsNumTransp = 0.25 })) |> notifyEnter (TransM (\m -> { m | transformsNumTransp = 1 })) |> makeTransparent model.transformsNumTransp
-                    ]
-                    |> move ( 30, 50 )
+        selectTransforms =
+            group
+                [ text (applyTransformsText model.uTransform) |> size 10 |> filled black |> move ( 4, 105 )
+                , triangle 8 |> filled (rgb 255 10 10) |> rotate (degrees 180) |> notifyTap UTransformsReverse |> move ( -70, 105 ) |> notifyLeave (TransM (\m -> { m | transformsLeftArrowTransp = 0.25 })) |> notifyEnter (TransM (\m -> { m | transformsLeftArrowTransp = 1 })) |> makeTransparent model.transformsLeftArrowTransp
+                , triangle 8 |> filled (rgb 255 10 10) |> notifyTap UTransforms |> move ( 100, 105 ) |> notifyLeave (TransM (\m -> { m | transformsRightArrowTransp = 0.25 })) |> notifyEnter (TransM (\m -> { m | transformsRightArrowTransp = 1 })) |> makeTransparent model.transformsRightArrowTransp
+                --, text (moveText model.transformFun) |> size 10 |> filled black |> notifyTap TransformsFunctionChange |> move ( x1, 105 ) |> notifyLeave (TransM (\m -> { m | transformsNumTransp = 0.25 })) |> notifyEnter (TransM (\m -> { m | transformsNumTransp = 1 })) |> makeTransparent model.transformsNumTransp
+                ]
+        
+        selectShapes = 
+            group
+                [ text (applyShapesText model.uShape) |> size 10 |> filled black |> move ( 4, 105 )
+                , triangle 8 |> filled (rgb 255 10 10) |> rotate (degrees 180) |> notifyTap UShapesReverse |> move ( -70, 105 ) |> notifyLeave (TransM (\m -> { m | shapesLeftArrowTransp = 0.25 })) |> notifyEnter (TransM (\m -> { m | shapesLeftArrowTransp = 1 })) |> makeTransparent model.shapesLeftArrowTransp
+                , triangle 8 |> filled (rgb 255 10 10) |> notifyTap UShapes |> move ( 100, 105 ) |> notifyLeave (TransM (\m -> { m | shapesRightArrowTransp = 0.25 })) |> notifyEnter (TransM (\m -> { m | shapesRightArrowTransp = 1 })) |> makeTransparent model.shapesRightArrowTransp
                 ]
 
         {-
@@ -1190,21 +1315,26 @@ view model =
             group
                 [ line ( -50, 50 ) ( -50 + model.uScale * notTrigCycleU uArg, 50 + u ) |> outlined (solid 1) (rgb model.r model.g model.b) |> makeTransparent 0.25
                 , line ( -50 + model.uScale * notTrigCycleU uArg, 50 + u ) ( 0, 50 + model.uSinGraph ) |> outlined (solid 1) (rgb model.r model.g model.b) |> makeTransparent 0.5
-                , line ( -50 + model.uScale * notTrigCycleU uArg, 50 + u ) ( model.uCosGraph - 50, 0 ) |> outlined (solid 1) (rgb model.r model.g model.b) |> makeTransparent 0.5
+                --, line ( -50 + model.uScale * notTrigCycleU uArg, 50 + u ) ( model.uCosGraph - 50, 0 ) |> outlined (solid 1) (rgb model.r model.g model.b) |> makeTransparent 0.5
                 , circle 2 |> filled (rgb model.r model.g model.b) |> move ( 0, 50 + model.uSinGraph )
-                , circle 2 |> filled (rgb model.r model.g model.b) |> move ( model.uCosGraph - 50, 0 )
+                --, circle 2 |> filled (rgb model.r model.g model.b) |> move ( model.uCosGraph - 50, 0 )
                 , circle (abs uScale) |> outlined (solid 1) black |> move ( -50, 50 )
                 , circle 2 |> filled (rgb model.r model.g model.b) |> move ( -50 + model.uScale * notTrigCycleU uArg, 50 + u )
                 ]
 
         titlesText =
             group
-                [ tt "1. Modify your functions!" |> move ( -50, 175 )
-                , tt "2. Choose a colour!" |> move ( 140, 125 )
-                , tt "3. Apply Transforms!" |> move ( 140, 35 )
-                , tt "4. Move it!" |> move ( -220, 5 )
-                , text "--The move function below will be in 'Your Code!' " |> serif |> italic |> size 6 |> filled titleColour |> move ( -250, -5 )
-                , tt "5. Your Code!" |> move ( 40, -70 )
+                [ tt "1. Choose a shape!" |> move ( -225, 150 )
+                , tt "2. Apply a transformation!" |> move ( -225, 100 )
+                , tt "3. Adjust the wave!" |> move ( -225, 50 )
+                , tt "4. Copy your code!" |> move ( -225, -25 )
+                , tt "5. See the Results!" |> move ( 0, 70)
+                , text "Bigger" |> serif |> italic |> size 6 |> filled titleColour |> move ( -220, 30 )
+                , text "Smaller" |> serif |> italic |> size 6 |> filled titleColour |> move ( -220, 5 )
+                , text "Faster" |> serif |> italic |> size 6 |> filled titleColour |> move ( -175, 30 )
+                , text "Slower" |> serif |> italic |> size 6 |> filled titleColour |> move ( -175, 5)
+                , text "More left" |> serif |> italic |> size 6 |> filled titleColour |> move ( -90, 30 )
+                , text "More right" |> serif |> italic |> size 6 |> filled titleColour |> move ( -90, 5 )
                 ]
 
         cosLabel =
@@ -1212,17 +1342,19 @@ view model =
     in
     [ graphPaperCustom 10 1 (rgb 255 137 5) |> makeTransparent 0.25 -- axes and selected coordinate ticks
     , group
-        [ rect 1000 0.5 |> filled brown
-        , rect 0.5 1000 |> filled brown
-        , group (sinCurve model) |> move ( 0, 50 )
-        , group (cosCurve model) |> move ( -50, 0 )
+        [ --rect 1000 0.5 |> filled brown
+        --, rect 0.5 1000 |> filled brown
+        group (sinCurve model) |> move ( 0, 50 )
+        --, group (cosCurve model) |> move ( -50, 0 )
         , trigGraphAxis model |> move ( -185, 70 )
         , circleGraphics
         ]
-        |> move ( -140, 80 )
-    , titlesText |> makeTransparent 0
-    , cosLabel |> move ( -127, 67 )
-    , transformsGraphicsGroup |> move ( 0, -100 )
+        |> move ( 90, 80 )
+    , titlesText |> makeTransparent 1
+    --, cosLabel |> move ( -127, 67 )
+    , transformsGraphicsGroup |> move ( 60, -100 )
+    , selectTransforms |> move ( -155, -25 )
+    , selectShapes |> move ( -155, 25 )
 
     --, moveGraphicsX |> move ( 180, 220 )
     --, moveGraphicsY |> move ( 60, 50 )
@@ -1230,10 +1362,10 @@ view model =
         [ functionText model |> move ( 5, 150 )
         , setofTriangles |> move ( 0, 165 )
         ]
-        |> move ( -20, 15 )
+        |> move ( -115, -135 )
 
     --, rgbGraphics |> move ( 140, 90 )
-    , yourCodeGroup |> move ( 40, 110 )
+    , yourCodeGroup |> move ( -230, -110 )
     ]
 
 
@@ -1247,12 +1379,12 @@ downArrow =
 
 trigGraphAxis model =
     group
-        [ rect 0.5 105 |> filled black |> move ( 185, -18 )
+        [ rect 0.5 80 |> filled black |> move ( 185, -18 )
         , rect model.sinWaveLength 0.5 |> filled black |> move ( 185 + model.sinWaveLength / 2, -20 )
 
         -- Subtract 130 to account for the ratio of the screen and remove excess
-        , rect 105 0.5 |> filled black |> move ( 132, -70 )
-        , rect 0.5 model.cosWaveLength |> filled black |> move ( 135, -70 - model.cosWaveLength / 2 )
+        --, rect 105 0.5 |> filled black |> move ( 132, -70 )
+        --, rect 0.5 model.cosWaveLength |> filled black |> move ( 135, -70 - model.cosWaveLength / 2 )
         ]
 
 
