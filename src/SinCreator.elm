@@ -1328,7 +1328,7 @@ view model =
                 , tt "2. Apply a transformation!" |> move ( -225, 100 )
                 , tt "3. Adjust the wave!" |> move ( -225, 50 )
                 , tt "4. Copy your code!" |> move ( -225, -25 )
-                , tt "See the Results!" |> move ( 60, 75 )
+                , tt "5. See the Results!" |> move ( 0, 70)
                 , text "Bigger" |> serif |> italic |> size 6 |> filled titleColour |> move ( -220, 30 )
                 , text "Smaller" |> serif |> italic |> size 6 |> filled titleColour |> move ( -220, 5 )
                 , text "Faster" |> serif |> italic |> size 6 |> filled titleColour |> move ( -175, 30 )
