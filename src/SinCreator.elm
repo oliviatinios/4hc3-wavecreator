@@ -6,7 +6,7 @@ User: Who is your imagined user
 The imagined user is a 10 year old child in elementary school. Their class is visited by MacOutreach for an ELM programming workshop on Wave Creator. MacOutreach had previously visited this same class for a workshop with Shape Creator. As a 10 year old, they have no background knowledge of sine/cosine functions. 
 
 Activity: What activity is your user engaged in
-MacOutreach requires participants of the ELM programming workshop to play around with the Wave Creator module to get a desired animation. The workshop will also require applying code generated from the wave creator to the child's own ELM code (which they created during the previous workshop with Shape Creator).
+The user is learning how to create animations in ELM.
 
 Emotion: How does your user feel about this activity
 The user may feel confused about this activity at first. They do not know about sine or cosine functions, and may feel intimidated by the relative complexity of it. At the same time, they may also feel excited that they will finally be able to make their shapes in their ELM code move.
