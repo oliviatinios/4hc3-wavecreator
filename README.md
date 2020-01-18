@@ -12,6 +12,4 @@ The goal of the assignment is to improve a user interface which helps users gene
 
 `elm make src/Main.elm`
 
-`open ./index.html`
-
 
